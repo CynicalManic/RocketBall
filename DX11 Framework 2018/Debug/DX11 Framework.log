@@ -1,0 +1,11 @@
+﻿  Application.cpp
+c:\users\c016193g\documents\github\rocketball\dx11 framework 2018\application.cpp(106): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+c:\users\c016193g\documents\github\rocketball\dx11 framework 2018\application.cpp(123): warning C4316: 'Camera': object allocated on the heap may not be aligned 16
+c:\users\c016193g\documents\github\rocketball\dx11 framework 2018\application.cpp(127): warning C4316: 'Camera': object allocated on the heap may not be aligned 16
+  Camera.cpp
+  DDSTextureLoader.cpp
+  DX11 Framework.cpp
+  RotatingObject.cpp
+  Generating Code...
+Application.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
+  DX11 Framework.vcxproj -> C:\Users\c016193g\Documents\GitHub\RocketBall\DX11 Framework 2018\Debug\DX11 Framework.exe
