@@ -60,8 +60,10 @@ private:
 	int						_objectNumber = 10;
 	RotatingObject*			_objects [10];
 	// Camera Variables	
-	Camera*					_camera;
-	Camera*					_camera2;
+	Camera*					_camera [2];
+	UINT					_activeCamera = 0;
+	// Time Variables
+	float					_oldTime = 0;
 	
 
 

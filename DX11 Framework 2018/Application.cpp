@@ -109,38 +109,22 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
 		_objects[i]->SetWorldPosition({ ((((float)rand()) / RAND_MAX) * 10) - 5 , 0 , ((((float)rand()) / RAND_MAX) * 10) - 5 });
 	}
 	
-
-	// Initialize the world matrix
-	//XMStoreFloat4x4(&_world[0], XMMatrixIdentity());
-	//XMStoreFloat4x4(&_world[1], XMMatrixIdentity());
-	
-
     // Initialize the view matrix
 	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f);
 	XMVECTOR At = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
 	XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
 
-	_camera2 = new Camera(&_view, &_projection, _WindowWidth, _WindowHeight);
-	_camera2->SetEye(Eye);
-	_camera2->LookAt();
+	_camera[0] = new Camera(&_view, &_projection, _WindowWidth, _WindowHeight);
+	_camera[1] = new Camera(&_view, &_projection, _WindowWidth, _WindowHeight);
+	_camera[1]->SetEye(Eye);
 
-	_camera = new Camera(&_view, &_projection, _WindowWidth, _WindowHeight);
+	_camera[0]->LookAt();
 
-	_camera2->LookAt();
-	_camera->LookTo();
-
-
-
-	//XMStoreFloat4x4(&_view, XMMatrixLookAtLH(Eye, At, Up));
-	//XMStoreFloat4x4(&_view, XMMatrixLookAtLH(_camera->GetEye, _camera->GetUp, _camera->GetAt));
 
 	_specularMtrl = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	_specularLight = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 	_specularPower = 3.0f;
 	_eyePosW = XMFLOAT3(0.0f, 2.0f, -3.0f);
-
-    // Initialize the projection matrix
-	//XMStoreFloat4x4(&_projection, XMMatrixPerspectiveFovLH(XM_PIDIV2, _WindowWidth / (FLOAT) _WindowHeight, 0.01f, 100.0f));
 
 	// Setup Texturing
 	CreateDDSTextureFromFile(_pd3dDevice, L"Crate_COLOR.dds", nullptr, &_pTextureRV);
@@ -625,16 +609,81 @@ void Application::Update()
         t = (dwTimeCur - dwTimeStart) / 1000.0f;
     }
 
-	//&_world.gTime = t;
+	// ***Keyboard Controls***
+	float deltaTime = t - _oldTime;
+	_oldTime = t;
 
-    //
-    // Animate the cube
-    //
-	
-	for (int i = 0; i < _objectNumber; i++)
+	XMVECTOR _eye = _camera[0]->GetEye();
+
+	// A Key
+	if (GetAsyncKeyState(0x41))
 	{
-		_objects[i]->Update(t);
-	}	
+		XMVECTOR addVector = { 0,0,-1 * deltaTime };
+		_eye = XMVectorAdd(_eye, addVector);
+		_camera[0]->SetEye(_eye);
+	}
+	// W key
+	if (GetAsyncKeyState(0x57))
+	{
+		XMVECTOR addVector = { -1 * deltaTime,0,0 };
+		_eye = XMVectorAdd(_eye, addVector);
+		_camera[0]->SetEye(_eye);
+	}
+	// S Key
+	if (GetAsyncKeyState(0x53))
+	{
+		XMVECTOR addVector = { 1 * deltaTime,0,0 };
+		_eye = XMVectorAdd(_eye, addVector);
+		_camera[0]->SetEye(_eye);
+	}
+	// D Key
+	if (GetAsyncKeyState(0x44))
+	{
+		XMVECTOR addVector = { 0,0,1 * deltaTime };
+		_eye = XMVectorAdd(_eye, addVector);
+		_camera[0]->SetEye(_eye);
+	}
+	// Q Key
+	if (GetAsyncKeyState(0x51))
+	{
+		XMVECTOR addVector = { 1 * deltaTime,0,0 };
+		_eye = XMVectorAdd(_eye, addVector);
+		_camera[0]->SetEye(_eye);
+	}
+	// E Key
+	if (GetAsyncKeyState(0x45))
+	{
+		XMVECTOR addVector = { 1 * deltaTime,0,0 };
+		_eye = XMVectorAdd(_eye, addVector);
+		_camera[0]->SetEye(_eye);
+	}
+	// 1 Key
+	if (GetAsyncKeyState(0x31))
+	{
+		_activeCamera = 0;
+	}
+	// 2 Key
+	if (GetAsyncKeyState(0x32))
+	{
+		_activeCamera = 1;
+	}
+
+	// ***Object Updates***
+
+	for each (Camera* var in _camera)
+	{
+		var->Update(t);
+
+	}
+
+	_camera[_activeCamera]->LookAt();
+	XMVECTOR test = _camera[0]->GetAt();
+	
+
+	for each (RotatingObject* var in _objects)
+	{
+		var->Update(t);
+	}
 }
 
 void Application::Draw()

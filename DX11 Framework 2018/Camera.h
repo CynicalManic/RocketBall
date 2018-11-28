@@ -30,5 +30,6 @@ public:
 	void SetUp(XMVECTOR up) { _up = up; };
 	void LookAt();
 	void LookTo();
+	void Update(float t);
 };
 
