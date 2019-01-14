@@ -10,7 +10,9 @@
 #include "RotatingObject.h"
 #include "Structures.h"
 #include "Camera.h"
-
+#include "OBJLoader.h"
+#include "ObjectClass.h"
+#include "CarObject.h"
 
 using namespace DirectX;
 
@@ -42,7 +44,6 @@ private:
 	// Blending
 	ID3D11BlendState*		_transparency;
 	// world matrices
-	XMFLOAT4X4              _world [10];
 	XMFLOAT4X4              _view;
 	XMFLOAT4X4              _projection;
 	// diffuse and ambient lighting variables
@@ -57,8 +58,9 @@ private:
 	float					_specularPower;
 	XMFLOAT3				_eyePosW;
 	// object variables
-	int						_objectNumber = 10;
-	RotatingObject*			_objects [10];
+	RotatingObject*			_cube;
+	MeshData				_objMeshData;
+	CarObject*				_car;
 	// Camera Variables	
 	Camera*					_camera;
 	Camera*					_camera2;

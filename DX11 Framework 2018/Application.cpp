@@ -78,42 +78,24 @@ HRESULT Application::Initialise(HINSTANCE hInstance, int nCmdShow)
         return E_FAIL;
     }
 
+	// initialize Obj Loader
+	_objMeshData = OBJLoader::Load("car.obj", _pd3dDevice);
+
 	// Initialize world objects
-	for (int i = 0; i < 1; i++)
-	{
-		_objects[i] = new RotatingObject();
-		_objects[i]->SetWorldPosition({ 0,0,0 });
-		_objects[i]->SetIndexBuffer(_pIndexBuffer);
-		_objects[i]->SetVertexBuffer(_pVertexBuffer);
-		_objects[i]->SetIndexCount(36);
-		_objects[i]->SetMatrix(&_world[0]);
-		_objects[i]->SetRotationSpeed({ 1,1,1 });
-	}
-
-	for (int i = 1; i < _objectNumber; i++)
-	{
-		_objects[i] = new RotatingObject();
-		//_objects[i]->SetWorldPosition({ 1,0,0 });
-		_objects[i]->SetIndexBuffer(_pIndexBuffer2);
-		_objects[i]->SetVertexBuffer(_pVertexBuffer2);
-		_objects[i]->SetIndexCount(18);
-		_objects[i]->SetMatrix(&_world[i]);
-		_objects[i]->SetRotationSpeed({ 1,1,1 });
-		_objects[i]->SetOrbitSpeed({ 0,1,0 });
-	}
 	
-
+		_cube = new RotatingObject();
+		_cube->SetWorldPosition({ 0,0,0 });
+		_cube->SetIndexBuffer(_pIndexBuffer);
+		_cube->SetVertexBuffer(_pVertexBuffer);
+		_cube->SetIndexCount(36);
+		_cube->SetRotationSpeed({ 1,1,1 });
+	
+	
 	srand(time(NULL));
-	for (int i = 1; i < _objectNumber; i++)
-	{
-		_objects[i]->SetWorldPosition({ ((((float)rand()) / RAND_MAX) * 10) - 5 , 0 , ((((float)rand()) / RAND_MAX) * 10) - 5 });
-	}
 	
-
-	// Initialize the world matrix
-	//XMStoreFloat4x4(&_world[0], XMMatrixIdentity());
-	//XMStoreFloat4x4(&_world[1], XMMatrixIdentity());
-	
+	_car = new CarObject();
+	_car->LoadMesh(_objMeshData);
+	_car->SetWorldPosition({ 0,0,200 });
 
     // Initialize the view matrix
 	XMVECTOR Eye = XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f);
@@ -359,6 +341,21 @@ HRESULT Application::InitIndexBuffer()
     hr = _pd3dDevice->CreateBuffer(&bd, &InitData, &_pIndexBuffer);
 
 	WORD triangleIndices[] =
+	{
+		// back
+		0,2,1,
+		0,4,2,
+		0,3,4,
+		0,1,3,
+		4,1,2,
+		3,1,4,
+	};
+
+	bd.ByteWidth = sizeof(WORD) * 18;
+	InitData.pSysMem = triangleIndices;
+	hr = _pd3dDevice->CreateBuffer(&bd, &InitData, &_pIndexBuffer2);
+
+	WORD planeIndices[] =
 	{
 		// back
 		0,2,1,
@@ -631,10 +628,11 @@ void Application::Update()
     // Animate the cube
     //
 	
-	for (int i = 0; i < _objectNumber; i++)
-	{
-		_objects[i]->Update(t);
-	}	
+	
+	
+	_cube->Update(t);
+	
+	_car->Update(t);
 }
 
 void Application::Draw()
@@ -646,7 +644,7 @@ void Application::Draw()
     _pImmediateContext->ClearRenderTargetView(_pRenderTargetView, ClearColor);
 	_pImmediateContext->ClearDepthStencilView(_depthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-	XMMATRIX world  = XMLoadFloat4x4(&_world[0]);
+	XMMATRIX world  = XMLoadFloat4x4(_car->GetMatrix());
 	XMMATRIX view = XMLoadFloat4x4(&_view);
 	XMMATRIX projection = XMLoadFloat4x4(&_projection);
     //
@@ -679,18 +677,14 @@ void Application::Draw()
 	_pImmediateContext->OMSetBlendState(0, 0, 0xffffffff);
 
 	// Render opaque objects //
+	_car->Draw(_pImmediateContext, _pConstantBuffer, &world, &cb);
       	
-	for (int i = 1; i < _objectNumber; i++)
-	{
-		_objects[i]->Draw(_pImmediateContext, _pConstantBuffer, &world, &cb);
-	}
+
 	// Set the blend state for transparent objects
 	_pImmediateContext->OMSetBlendState(_transparency, blendFactor, 0xffffffff);
 	
-	for (int i = 0; i < 1; i++)
-	{
-		_objects[i]->Draw(_pImmediateContext, _pConstantBuffer, &world, &cb);
-	}
+	_cube->Draw(_pImmediateContext, _pConstantBuffer, &world, &cb);
+	
 
     //
     // Present our back buffer to our front buffer

@@ -377,8 +377,11 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="CarObject.cpp" />
     <ClCompile Include="DDSTextureLoader.cpp" />
     <ClCompile Include="DX11 Framework.cpp" />
+    <ClCompile Include="ObjectClass.cpp" />
+    <ClCompile Include="OBJLoader.cpp" />
     <ClCompile Include="RotatingObject.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -387,7 +390,10 @@
   <ItemGroup>
     <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CarObject.h" />
     <ClInclude Include="DDSTextureLoader.h" />
+    <ClInclude Include="ObjectClass.h" />
+    <ClInclude Include="OBJLoader.h" />
     <ClInclude Include="RotatingObject.h" />
     <CLInclude Include="resource.h" />
     <ClInclude Include="Structures.h" />

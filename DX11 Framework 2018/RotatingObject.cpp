@@ -8,29 +8,7 @@ RotatingObject::~RotatingObject()
 {
 	
 }
-void RotatingObject::Initialise(ID3D11Buffer* vertexBuffer, ID3D11Buffer* indexBuffer, XMFLOAT4X4 world, UINT indexCount)
-{
-	_vertexBuffer = vertexBuffer;
-	_indexBuffer = indexBuffer;
-	_world = &world;
-	_indexCount = indexCount;
-}
 
-void RotatingObject::Draw(ID3D11DeviceContext* _pImmediateContext, ID3D11Buffer* _pConstantBuffer, XMMATRIX* mWorld, ConstantBuffer* cb)
-{
-	UINT stride = sizeof(SimpleVertex);
-	UINT offset = 0;
-
-	_pImmediateContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-	_pImmediateContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R16_UINT, 0);
-
-	*mWorld = XMLoadFloat4x4(_world);
-	cb->mWorld = XMMatrixTranspose(*mWorld);
-	_pImmediateContext->UpdateSubresource(_pConstantBuffer, 0, nullptr, cb, 0, 0);
-	_pImmediateContext->VSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	_pImmediateContext->PSSetConstantBuffers(0, 1, &_pConstantBuffer);
-	_pImmediateContext->DrawIndexed(_indexCount, 0, 0);
-}
 
 void RotatingObject::Update(float t)
 {
